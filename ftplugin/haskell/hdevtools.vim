@@ -30,6 +30,7 @@ nnoremap <buffer> <silent> gf :call hdevtools#go_file("e")<CR>
 nnoremap <buffer> <silent> <C-W><C-F> :call hdevtools#go_file("sp")<CR>
 
 command! -buffer -nargs=0 HdevtoolsType echo hdevtools#type()[1]
+command! -buffer -nargs=0 HdevtoolsInsertType call hdevtools#insert_type()
 command! -buffer -nargs=0 HdevtoolsClear call hdevtools#type_clear()
 command! -buffer -nargs=? HdevtoolsInfo call hdevtools#info(<q-args>)
 

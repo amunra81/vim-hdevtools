@@ -500,6 +500,13 @@ function! hdevtools#clear_highlight()
   endif
 endfunction
 
+function! hdevtools#insert_type()
+    let l:ret = hdevtools#type()
+    let l:line = l:ret[1]
+    call append(line('.')-1,l:line)
+    call hdevtools#type_clear()
+endfunction
+
 function! hdevtools#type()
   if &l:modified
     call hdevtools#print_warning('hdevtools#type: the buffer has been modified but not written')
@@ -512,13 +519,16 @@ function! hdevtools#type()
     return b:hdevtools_type.type()
   endif
 
-  let l:file = expand('%')
+  let l:file = expand('%:p')
   if l:file ==# ''
     call hdevtools#print_warning("current version of hdevtools.vim doesn't support running on an unnamed buffer.")
     return ['', '']
   endif
   let l:cmd = hdevtools#build_command('type', shellescape(l:file) . ' ' . l:line . ' ' . l:col)
-  let l:output = system(l:cmd)
+  let l:shcommand = $SHELL  .' -c ''' . l:cmd . ''''
+
+  "echom l:shcommand
+  let l:output = system(l:shcommand)
 
   if v:shell_error != 0
     for l:line in split(l:output, '\n')
@@ -557,7 +567,9 @@ function! hdevtools#type()
     autocmd WinLeave <buffer> call s:on_leave()
   augroup END
 
-  return l:ret
+  let l:wordUnderCursor = expand("<cword>")
+  return [l:ret[0],l:wordUnderCursor . ' :: ' . l:ret[1]]
+
 endfunction
 
 function! hdevtools#type_clear()
